@@ -1,0 +1,104 @@
+{
+    "1": {
+        "type": "gcd",
+        "name": "冰1",
+        "cast_time": 2.44,
+        "recast_time": 2.5,
+        "keyboard": "1",
+        "consumption": 0
+    },
+    "2": {
+        "type": "gcd",
+        "name": "冰2",
+        "cast_time": 2.44,
+        "recast_time": 2.5,
+        "keyboard": "!",
+        "consumption": 1600
+    },
+    "3": {
+        "name": "冰3",
+        "type": "gcd",
+        "cast_time": 2.6,
+        "recast_time": 2.5,
+        "keyboard": "q",
+        "consumption": 2000
+    },
+    "4": {
+        "name": "冰4",
+        "type": "gcd",
+        "cast_time": 2.44,
+        "recast_time": 2.5,
+        "keyboard": "V",
+        "consumption": 0
+    },
+    "5": {
+        "type": "gcd",
+        "name": "冰悖论",
+        "cast_time": 2.44,
+        "recast_time": 2.5,
+        "keyboard": "2",
+        "consumption": 0
+    },
+    "6": {
+        "type": "gcd",
+        "name": "火1",
+        "cast_time": 2.44,
+        "recast_time": 2.5,
+        "keyboard": "2",
+        "consumption": 800
+    },
+    "7": {
+        "type": "gcd",
+        "name": "火2",
+        "cast_time": 2.44,
+        "recast_time": 2.5,
+        "keyboard": "@",
+        "consumption": 1500
+    },
+    "8": {
+        "type": "gcd",
+        "name": "火3",
+        "cast_time": 2.6,
+        "recast_time": 2.5,
+        "keyboard": "e",
+        "consumption": 2000
+    },
+    "9": {
+        "type": "gcd",
+        "name": "火4",
+        "cast_time": 2.55,
+        "recast_time": 2.5,
+        "keyboard": "A",
+        "consumption": 800
+    },
+    "10": {
+        "type": "gcd",
+        "name": "火悖论",
+        "cast_time": 2.44,
+        "recast_time": 2.5,
+        "keyboard": "2",
+        "consumption": 800
+    },
+    "11": {
+        "type": "gcd",
+        "name": "绝望",
+        "cast_time": 2.7,
+        "recast_time": 2.5,
+        "keyboard": "4",
+        "consumption": 800
+    },
+    "12": {
+        "type": "capability",
+        "name": "醒梦",
+        "cd": 60.0,
+        "cumulation": 1,
+        "keyboard": "6"
+    },
+    "13": {
+        "type": "capability",
+        "name": "黑魔纹",
+        "cd": 90.0,
+        "cumulation": 1,
+        "keyboard": "f1"
+    }
+}
