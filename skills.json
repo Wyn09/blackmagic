@@ -92,13 +92,39 @@
         "name": "醒梦",
         "cd": 60.0,
         "cumulation": 1,
-        "keyboard": "6"
+        "keyboard": "6",
+        "consumption": 0
     },
     "13": {
         "type": "capability",
         "name": "黑魔纹",
         "cd": 90.0,
         "cumulation": 1,
-        "keyboard": "f1"
+        "keyboard": "f1",
+        "consumption": 0
+    },
+    "14": {
+        "type": "transpose",
+        "name": "星灵移位",
+        "cd": 5.0,
+        "cumulation": 1,
+        "keyboard": "X",
+        "consumption": 0
+    },
+    "15": {
+        "type": "gcd",
+        "name": "暴雷",
+        "cast_time": 2.3,
+        "recast_time": 2.5,
+        "keyboard": "3",
+        "consumption": 800
+    },
+    "16": {
+        "type": "gcd",
+        "name": "异言",
+        "cast_time": 0.0,
+        "recast_time": 2.5,
+        "keyboard": "f",
+        "consumption": 0
     }
 }

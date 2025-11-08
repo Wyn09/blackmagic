@@ -108,7 +108,7 @@ class GameUI:
         text_rect = text.get_rect(center=rect.center)
         self.screen.blit(text, text_rect)
 
-    def draw_status(self, status, ice_needle, enochian_time, polyglot):
+    def draw_status(self, status, ice_needle, enochian_time, polyglot, polyglot_accumulate_time):
         """绘制状态信息"""
         pygame.draw.rect(self.screen, (40, 40, 50), self.status_rect)
         pygame.draw.rect(self.screen, self.COLOR_TEXT, self.status_rect, 2)
@@ -135,9 +135,11 @@ class GameUI:
         info2_rect = info2_text.get_rect(center=(self.status_rect.centerx, self.status_rect.y + 65))
         self.screen.blit(info2_text, info2_rect)
 
-        # 第三行：天语剩余时间
-        enochian_line = f"天语剩余: {enochian_time:.1f}s" if enochian_time > 0 else "天语: 未激活"
-        enochian_text = self.font_small.render(enochian_line, True, self.COLOR_TEXT)
+        # 第三行：天语剩余时间和通晓累计时间
+        enochian_line = f"天语: {enochian_time:.1f}s" if enochian_time > 0 else "天语: 未激活"
+        polyglot_line = f" | 通晓累计: {polyglot_accumulate_time:.1f}s/30s" if polyglot_accumulate_time > 0 else ""
+        combined_line = enochian_line + polyglot_line
+        enochian_text = self.font_small.render(combined_line, True, self.COLOR_TEXT)
         enochian_rect = enochian_text.get_rect(center=(self.status_rect.centerx, self.status_rect.y + 90))
         self.screen.blit(enochian_text, enochian_rect)
 
@@ -172,7 +174,7 @@ class GameUI:
                     self.screen.blit(msg_text, msg_rect)
                     y_offset += 35
 
-    def update(self, hp, max_hp, mp, max_mp, status, ice_needle, enochian_time, polyglot, skill_name="", message="", current_input=""):
+    def update(self, hp, max_hp, mp, max_mp, status, ice_needle, enochian_time, polyglot, polyglot_accumulate_time, skill_name="", message="", current_input=""):
         """更新并绘制整个界面"""
         # 不在这里处理事件，让 input_keyboard 统一处理
         # 清空屏幕
@@ -189,7 +191,7 @@ class GameUI:
         self.draw_bar(self.mp_bar_rect, mp, max_mp, self.COLOR_MP, self.COLOR_MP_BG)
 
         # 绘制状态信息
-        self.draw_status(status, ice_needle, enochian_time, polyglot)
+        self.draw_status(status, ice_needle, enochian_time, polyglot, polyglot_accumulate_time)
 
         # 绘制技能信息
         self.draw_skill_info(skill_name, message, current_input)

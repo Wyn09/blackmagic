@@ -3,7 +3,7 @@ import time
 import pygame
 from ui import GameUI
 
-with open("/Users/eyfen/Office/Codes/Projects/blackmagic/skills.json", "r") as f:
+with open("./skills.json", "r", encoding="utf-8") as f:
     skill_data = json.load(f)
 
 
@@ -21,18 +21,48 @@ class BlackMage:
         self.status_list = [0]
         self.ice_needle = 0
         self.paradox = "6"
-        # 天语剩余时间
+        # 天语剩余时间（秒）
         self.enochian_remain_time = 0
         self.start_enochian_time = None
         # UI界面
         self.ui = ui
         # 通晓档数，最多2档
         self.polyglot = 0
+        # 通晓累计时间（秒）
+        self.polyglot_accumulate_time = 0
+        self.polyglot_accumulate_start_time = None
         # 上次输入的技能名
         self.last_input_skill = ""
     
     def calcu_enochian_remain_time(self):
-        pass
+        """计算天语剩余时间"""
+        if self.start_enochian_time is None:
+            return
+
+        elapsed = time.time() - self.start_enochian_time
+        self.enochian_remain_time = max(0, 15 - elapsed)
+
+        # 天语时间过期，重置状态
+        if self.enochian_remain_time <= 0:
+            self.status = 0
+            self.enochian_remain_time = 0
+            self.start_enochian_time = None
+
+    def calcu_polyglot_accumulate_time(self):
+        """计算通晓累计时间"""
+        if not self.polyglot_accumulate_start_time:
+            return
+
+        elapsed = time.time() - self.polyglot_accumulate_start_time
+        self.polyglot_accumulate_time = elapsed
+
+        # 累计到30秒，增加通晓档数并重置计时
+        if self.polyglot_accumulate_time >= 30:
+            if self.polyglot < 2:  # 最多2档
+                self.polyglot += 1
+            # 重置累计时间
+            self.polyglot_accumulate_time = 0
+            self.polyglot_accumulate_start_time = time.time()
 
     def input_keyboard(self):
         """监听一次按键，返回按键信息（使用pygame事件）"""
@@ -62,7 +92,7 @@ class BlackMage:
                 self.ui.clock.tick(60)
 
         return key_pressed
-        
+
     def exam_magic(self, skill_id):
         # 当前是无状态
         if self.status == 0:
@@ -118,38 +148,86 @@ class BlackMage:
         return True
         
     def exam_status(self, skill_id, skill_name):
+
         if self.status == 0:
             if "6" == skill_id:
                 self.status += 1
+                self.enochian_remain_time = 15
+                self.start_enochian_time = time.time()
+                # 启动通晓累计计时
+                if not self.polyglot_accumulate_start_time:
+                    self.polyglot_accumulate_start_time = time.time()
             elif skill_id in ["7", "8"]:
                 self.status = 3
+                self.enochian_remain_time = 15
+                self.start_enochian_time = time.time()
+                # 启动通晓累计计时
+                if not self.polyglot_accumulate_start_time:
+                    self.polyglot_accumulate_start_time = time.time()
             elif "1" == skill_id:
                 self.status = -1
+                self.enochian_remain_time = 15
+                self.start_enochian_time = time.time()
+                # 启动通晓累计计时
+                if not self.polyglot_accumulate_start_time:
+                    self.polyglot_accumulate_start_time = time.time()
             elif skill_id in ["2", "3"]:
                 self.status = -3
-            
+                self.enochian_remain_time = 15
+                self.start_enochian_time = time.time()
+                # 启动通晓累计计时
+                if not self.polyglot_accumulate_start_time:
+                    self.polyglot_accumulate_start_time = time.time()
+
         elif self.status > 0:
             if skill_name == "绝望":
                 self.status = 3
+                self.enochian_remain_time = 15
+                self.start_enochian_time = time.time()
             elif skill_id in ["6", "10"]:
                 self.status = 3 if self.status + 1 >=3 else self.status + 1
+                self.enochian_remain_time = 15
+                self.start_enochian_time = time.time()
             elif skill_id in ["7", "8"]:
                 self.status = 3
+                self.enochian_remain_time = 15
+                self.start_enochian_time = time.time()
             elif "1" == skill_id:
                 self.status = 0
+                # 天语结束，重置通晓累计时间
+                self.polyglot_accumulate_time = 0
+                self.polyglot_accumulate_start_time = None
             elif skill_id in ["2", "3"]:
-                self.status = -3  
+                self.status = -3
+                self.enochian_remain_time = 15
+                self.start_enochian_time = time.time()
 
-            
+
         elif self.status < 0:
             if "6" == skill_id:
                 self.status = 0
+                # 天语结束，重置通晓累计时间
+                self.polyglot_accumulate_time = 0
+                self.polyglot_accumulate_start_time = None
             elif skill_id in ["7", "8"]:
                 self.status = 3
+                self.enochian_remain_time = 15
+                self.start_enochian_time = time.time()
             elif skill_id in ["1", "5"]:
                 self.status = -3 if self.status -1 <=3 else self.status - 1
+                self.enochian_remain_time = 15
+                self.start_enochian_time = time.time()
             elif skill_id in ["2", "3"]:
                 self.status = -3
+                self.enochian_remain_time = 15
+                self.start_enochian_time = time.time()
+
+        # 判断是否有通晓打异言
+        if skill_id == "16":
+            if self.polyglot > 0:
+                self.polyglot -= 1
+            else:
+                print(f"当前通晓为0，无法使用{skill_name}")
 
 
 
@@ -166,13 +244,23 @@ class BlackMage:
         else:
             self.paradox = "6"
             return
-
+    # 计时天语
+    async def exam_enochian():
+        pass
+    # 计时通晓
+    async def exam_polyglot(self):
+        pass
     def run_skill(self):
+        # 计算天语剩余时间
+        self.calcu_enochian_remain_time()
+        # 计算通晓累计时间
+        self.calcu_polyglot_accumulate_time()
+
         # 更新UI（技能施放前），显示上次输入的技能
         if self.ui:
             if not self.ui.update(self.healthy, self.max_healthy, self.magic, self.max_magic,
                                   self.status, self.ice_needle, self.enochian_remain_time,
-                                  self.polyglot, "", "等待输入...", current_input=self.last_input_skill):
+                                  self.polyglot, self.polyglot_accumulate_time, "", "等待输入...", current_input=self.last_input_skill):
                 return False
 
         user_input = self.input_keyboard()
@@ -189,7 +277,7 @@ class BlackMage:
             if self.ui:
                 self.ui.update(self.healthy, self.max_healthy, self.magic, self.max_magic,
                               self.status, self.ice_needle, self.enochian_remain_time,
-                              self.polyglot, "", f"无效按键: {user_input}", current_input=self.last_input_skill)
+                              self.polyglot, self.polyglot_accumulate_time, "", f"无效按键: {user_input}", current_input=self.last_input_skill)
             else:
                 print("无效按键")
             return True
@@ -215,7 +303,7 @@ class BlackMage:
             if self.ui:
                 self.ui.update(self.healthy, self.max_healthy, self.magic, self.max_magic,
                               self.status, self.ice_needle, self.enochian_remain_time,
-                              self.polyglot, skill_name, casting_msg, current_input=self.last_input_skill)
+                              self.polyglot, self.polyglot_accumulate_time, skill_name, casting_msg, current_input=self.last_input_skill)
             else:
                 print(f"status: {self.status}, ice needle: {self.ice_needle}")
                 print(f"casting... {skill_name}")
@@ -225,7 +313,7 @@ class BlackMage:
             if self.ui:
                 self.ui.update(self.healthy, self.max_healthy, self.magic, self.max_magic,
                               self.status, self.ice_needle, self.enochian_remain_time,
-                              self.polyglot, skill_name, error_msg, current_input=self.last_input_skill)
+                              self.polyglot, self.polyglot_accumulate_time, skill_name, error_msg, current_input=self.last_input_skill)
             else:
                 print("remain magic not enough")
 
@@ -234,7 +322,7 @@ class BlackMage:
 
         self.exam_paradox()
         self.status_list.append(self.status)
-        self.status_list = self.status_list[:5]
+        self.status_list = self.status_list[-5:]
 
         return True
         
